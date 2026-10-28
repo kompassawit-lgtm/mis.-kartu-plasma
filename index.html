@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3B6D11">
+<title>Kartu Plasma Suka Ramai</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--hijau:#3B6D11;--hijau-tua:#27500A;--hijau-muda:#EAF3DE;--teks:#1b1f17;--teks2:#5F5E5A;--garis:#d6d9cf;--latar:#f6f7f3;--kartu:#fff;
+--ok:#2f7d16;--ok-bg:#e3f2d6;--warn:#8a5a00;--warn-bg:#fff1cc;--bad:#a32d2d;--bad-bg:#fcebeb;--info-bg:#e6f1fb;--info:#0c447c}
+@media (prefers-color-scheme:dark){:root{--teks:#eef0ea;--teks2:#b4b2a9;--garis:#3a3d36;--latar:#151713;--kartu:#1f221c;--hijau-muda:#24301a;
+--ok-bg:#1f3315;--ok:#9fd57a;--warn-bg:#3a2d0b;--warn:#f2c46b;--bad-bg:#3a1717;--bad:#f09595;--info-bg:#10263b;--info:#9cc8f2}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--latar);color:var(--teks);font-size:16px}
+header{background:var(--hijau);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;font-weight:600}
+header .sub{font-size:13px;opacity:.85;margin-top:2px}
+main{padding:16px;max-width:560px;margin:0 auto}
+.card{background:var(--kartu);border:1px solid var(--garis);border-radius:12px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:14px;color:var(--teks2);margin:10px 0 4px}
+input,textarea{width:100%;font-size:16px;padding:12px;border:1px solid var(--garis);border-radius:8px;background:var(--kartu);color:var(--teks)}
+button{font-size:16px;font-weight:600;border:0;border-radius:10px;padding:14px;width:100%;cursor:pointer;background:var(--hijau);color:#fff;margin-top:10px}
+button.sek{background:transparent;color:var(--hijau);border:1.5px solid var(--hijau)}
+@media (prefers-color-scheme:dark){button.sek{color:#9fd57a;border-color:#9fd57a}}
+button:disabled{opacity:.5}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid3 button{margin:0;padding:14px 4px;font-size:15px}
+.stat{display:flex;gap:8px;margin-bottom:14px}
+.stat div{flex:1;background:var(--kartu);border:1px solid var(--garis);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--teks2)}
+.hasil{border-radius:12px;padding:16px;margin-bottom:14px;border:2px solid transparent}
+.hasil .nama{font-size:24px;font-weight:700;margin:4px 0}
+.hasil .srp{font-family:ui-monospace,monospace;font-size:20px;font-weight:700}
+.hasil .det{font-size:14px;color:var(--teks2);margin-top:4px}
+.hasil .lbl{font-size:13px;font-weight:700;letter-spacing:.04em}
+.h-ok{background:var(--ok-bg);border-color:var(--ok)}.h-ok .lbl{color:var(--ok)}
+.h-warn{background:var(--warn-bg);border-color:var(--warn)}.h-warn .lbl{color:var(--warn)}
+.h-bad{background:var(--bad-bg);border-color:var(--bad)}.h-bad .lbl{color:var(--bad)}
+.h-info{background:var(--info-bg);border-color:var(--info)}.h-info .lbl{color:var(--info)}
+video{width:100%;border-radius:12px;background:#000;max-height:46vh;object-fit:cover}
+.list div{padding:10px 0;border-bottom:1px solid var(--garis);font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.list div:last-child{border-bottom:0}
+.pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)}.p-wait{background:var(--warn-bg);color:var(--warn)}.p-bad{background:var(--bad-bg);color:var(--bad)}.p-info{background:var(--info-bg);color:var(--info)}
+.muted{color:var(--teks2);font-size:14px}
+.row{display:flex;gap:8px}.row button{flex:1}
+.hide{display:none!important}
+.cari div{padding:12px;border:1px solid var(--garis);border-radius:8px;margin-top:6px;cursor:pointer}
+.err{color:var(--bad);font-size:14px;margin-top:6px}
+a{color:var(--hijau)}
+</style>
+</head>
+<body>
+<header><h1>Kartu Anggota Plasma</h1><div class="sub" id="hdrSub">Kelompok Tani Desa Suka Ramai</div></header>
+<main>
+
+<!-- LOGIN -->
+<section id="vLogin" class="hide">
+  <div class="card">
+    <b>Masuk petugas</b>
+    <label for="inApi">Alamat aplikasi (URL Apps Script)</label>
+    <input id="inApi" inputmode="url" placeholder="https://script.google.com/macros/s/.../exec">
+    <label for="inPid">ID petugas</label>
+    <input id="inPid" autocapitalize="characters" placeholder="P01">
+    <label for="inPin">PIN</label>
+    <input id="inPin" type="password" inputmode="numeric">
+    <button id="btnLogin">Masuk dan unduh data</button>
+    <div id="loginErr" class="err"></div>
+  </div>
+  <p class="muted">Data anggota disimpan di HP ini agar tetap bisa dipakai saat sinyal lemah. Keluar dari aplikasi setelah acara selesai.</p>
+</section>
+
+<!-- PILIH KEGIATAN -->
+<section id="vKeg" class="hide">
+  <div class="card"><b>Pilih kegiatan</b><div id="kegList"></div>
+  <p class="muted" id="kegKosong"></p></div>
+  <div class="row"><button class="sek" id="btnReload">Muat ulang data</button><button class="sek" id="btnLogout">Keluar</button></div>
+</section>
+
+<!-- PINDAI -->
+<section id="vScan" class="hide">
+  <div class="stat">
+    <div><b id="sSudah">0</b><span>sudah</span></div>
+    <div><b id="sBelum">0</b><span>belum</span></div>
+    <div><b id="sTunda">0</b><span>tertunda</span></div>
+  </div>
+  <div id="hasil" class="hasil h-info"><div class="lbl">SIAP</div><div class="det">Pilih cara membaca kartu di bawah.</div></div>
+  <div id="konfirmBox" class="card hide">
+    <div id="manualBox" class="hide">
+      <label for="inKet">Catatan (wajib untuk manual), mis. "kartu tertinggal, dicocokkan dengan KTP"</label>
+      <textarea id="inKet" rows="2"></textarea>
+    </div>
+    <p class="muted" style="margin:0">Cocokkan orang di depan Anda dengan nama di atas (bila perlu dengan KTP).</p>
+    <button id="btnKonfirm">Konfirmasi</button>
+    <button class="sek" id="btnBatal">Batal</button>
+  </div>
+  <video id="vid" class="hide" playsinline muted></video>
+  <div id="cariBox" class="card hide">
+    <label for="inCari">Cari nama atau No. Anggota</label>
+    <input id="inCari" autocomplete="off" placeholder="mis. SRP-0043 atau SITI">
+    <div class="cari" id="cariList"></div>
+  </div>
+  <div class="grid3">
+    <button id="btnQR">Pindai QR</button>
+    <button id="btnNFC">Tempel NFC</button>
+    <button id="btnCari" class="sek">Cari manual</button>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="row" style="align-items:center"><b style="flex:1">Riwayat di HP ini</b><span id="netStat" class="pill p-info">…</span></div>
+    <div class="list" id="logList"></div>
+    <div class="row"><button class="sek" id="btnSync">Kirim tertunda</button><button class="sek" id="btnCsv">Unduh CSV</button></div>
+    <div class="row"><button class="sek" id="btnRekap">Rekap server</button><button class="sek" id="btnGanti">Ganti kegiatan</button></div>
+    <div id="rekapOut" class="muted"></div>
+  </div>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script>
+"use strict";
+/* ---------- penyimpanan lokal (aman bila diblokir) ---------- */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem("kp_" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("kp_" + k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem("kp_" + k); } catch (e) {} }
+};
+const $ = id => document.getElementById(id);
+let S = {
+  cfg: LS.get("cfg", null), data: LS.get("data", null), kegId: LS.get("kegId", null),
+  antre: LS.get("antre", []), log: LS.get("log", []), sudahLokal: LS.get("sudahLokal", {})
+};
+let pilihan = null, scanning = false, nfcAktif = false, stream = null, sibukSync = false;
+const LABEL = { PEMBAYARAN: "Sudah menerima pembayaran", SERAH_KARTU: "Kartu sudah diserahkan", RAPAT: "Catat hadir" };
+const simpan = () => { LS.set("antre", S.antre); LS.set("log", S.log.slice(0, 1000)); LS.set("sudahLokal", S.sudahLokal); };
+
+function tampil(v) { ["vLogin", "vKeg", "vScan"].forEach(x => $(x).classList.toggle("hide", x !== v)); }
+function kegAktif() { return S.data && S.data.kegiatan.find(k => k.id === S.kegId); }
+function anggota(mid) { return S.data.anggota.find(a => a.m === mid); }
+function sudahDi(mid) {
+  const k = S.kegId, srv = (S.data.sudah[k] || {})[mid], lok = (S.sudahLokal[k] || {})[mid];
+  return srv ? { w: srv, tunda: false } : lok ? { w: lok, tunda: true } : null;
+}
+function uuid() { return (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2)); }
+function jam(d) { const p = n => String(n).padStart(2, "0"); d = d || new Date(); return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+/* ---------- API ---------- */
+async function api(body) {
+  const r = await fetch(S.cfg.api, { method: "POST", body: JSON.stringify(Object.assign({ petugasId: S.cfg.pid, pin: S.cfg.pin }, body)) });
+  if (!r.ok) throw new Error("Server HTTP " + r.status);
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "Gagal");
+  return j;
+}
+
+async function login() {
+  $("loginErr").textContent = "";
+  S.cfg = { api: $("inApi").value.trim(), pid: $("inPid").value.trim().toUpperCase(), pin: $("inPin").value.trim() };
+  if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(S.cfg.api)) { $("loginErr").textContent = "URL harus alamat Apps Script (https://script.google.com/...)"; return; }
+  $("btnLogin").disabled = true; $("btnLogin").textContent = "Menghubungi server…";
+  try { await muatData(); LS.set("cfg", S.cfg); bukaKegiatan(); }
+  catch (e) { $("loginErr").textContent = e.message; }
+  finally { $("btnLogin").disabled = false; $("btnLogin").textContent = "Masuk dan unduh data"; }
+}
+async function muatData() {
+  const j = await api({ action: "init" });
+  S.data = { petugas: j.petugas, kegiatan: j.kegiatan, anggota: j.anggota, sudah: j.sudah || {}, waktu: j.waktu };
+  LS.set("data", S.data);
+}
+
+/* ---------- kegiatan ---------- */
+function bukaKegiatan() {
+  tampil("vKeg");
+  $("hdrSub").textContent = "Petugas: " + S.data.petugas.nama + " · data " + S.data.waktu;
+  const el = $("kegList"); el.innerHTML = "";
+  S.data.kegiatan.forEach(k => {
+    const b = document.createElement("button");
+    b.textContent = k.nama + (k.tanggal ? " · " + k.tanggal : "");
+    b.onclick = () => { S.kegId = k.id; LS.set("kegId", k.id); bukaScan(); };
+    el.appendChild(b);
+  });
+  $("kegKosong").textContent = S.data.kegiatan.length ? "" : "Belum ada kegiatan berstatus DIBUKA di Google Sheets (tab KEGIATAN).";
+}
+function bukaScan() {
+  const k = kegAktif(); if (!k) return bukaKegiatan();
+  tampil("vScan");
+  $("hdrSub").textContent = k.nama + " · " + S.data.petugas.nama;
+  $("btnKonfirm").textContent = LABEL[k.jenis] || "Konfirmasi";
+  $("btnNFC").disabled = !("NDEFReader" in window);
+  if (!("NDEFReader" in window)) $("btnNFC").title = "HP/browser ini tidak mendukung Web NFC";
+  setHasil("info", "SIAP", "", "Pilih cara membaca kartu di bawah.");
+  render();
+}
+
+/* ---------- tampilan ---------- */
+function setHasil(jenis, lbl, nama, det, srp) {
+  const h = $("hasil"); h.className = "hasil h-" + jenis;
+  h.innerHTML = '<div class="lbl">' + esc(lbl) + "</div>" + (srp ? '<div class="srp">' + esc(srp) + "</div>" : "") +
+    (nama ? '<div class="nama">' + esc(nama) + "</div>" : "") + (det ? '<div class="det">' + det + "</div>" : "");
+}
+function render() {
+  const k = S.kegId, aktif = S.data.anggota.filter(a => a.st === "AKTIF").length;
+  const set = Object.assign({}, S.data.sudah[k] || {}, S.sudahLokal[k] || {});
+  const n = Object.keys(set).length;
+  $("sSudah").textContent = n; $("sBelum").textContent = Math.max(aktif - n, 0);
+  $("sTunda").textContent = S.antre.filter(x => x.kegiatanId === k).length;
+  const ns = $("netStat"); ns.textContent = navigator.onLine ? "online" : "offline"; ns.className = "pill " + (navigator.onLine ? "p-ok" : "p-wait");
+  const L = S.log.filter(x => x.kegiatanId === k).slice(0, 15);
+  $("logList").innerHTML = L.map(x => {
+    const c = x.status === "BERHASIL" ? "p-ok" : x.status === "TERTUNDA" ? "p-wait" : x.status === "SUDAH" ? "p-info" : "p-bad";
+    return "<div><span>" + esc(x.waktuHp.slice(11, 16)) + " · " + esc(x.memberId) + " " + esc(x.nama) + (x.alasan ? "<br><small>" + esc(x.alasan) + "</small>" : "") +
+      '</span><span class="pill ' + c + '">' + esc(x.status) + "</span></div>";
+  }).join("") || '<div class="muted">Belum ada.</div>';
+}
+
+/* ---------- alur pilih kartu ---------- */
+function tunjuk(mid, metode, extra) {
+  stopKamera(); $("cariBox").classList.add("hide");
+  mid = String(mid || "").trim().toUpperCase();
+  const a = anggota(mid);
+  pilihan = null; $("konfirmBox").classList.add("hide");
+  if (!a) { bunyi(false); return setHasil("bad", "DITOLAK", "", "Kartu tidak terdaftar: " + esc(mid || "(kosong)")); }
+  if (a.st !== "AKTIF") { bunyi(false); return setHasil("bad", "DITOLAK – ANGGOTA NONAKTIF", a.n, esc(a.s), a.m); }
+  const det = esc(a.s) + "<br>" + esc(a.l) + " · " + esc(a.r) + " · via " + metode;
+  const sd = sudahDi(a.m);
+  if (sd) { bunyi(false); return setHasil("warn", sd.tunda ? "SUDAH DICATAT (TERTUNDA)" : "SUDAH DICATAT", a.n, det + "<br>Waktu: " + esc(sd.w), a.m); }
+  pilihan = Object.assign({ memberId: a.m, nama: a.n, metode: metode }, extra || {});
+  setHasil("info", "PERIKSA DAN KONFIRMASI", a.n, det, a.m);
+  $("manualBox").classList.toggle("hide", metode !== "MANUAL"); $("inKet").value = "";
+  $("konfirmBox").classList.remove("hide"); bunyi(true);
+}
+function konfirmasi() {
+  if (!pilihan) return;
+  const ket = $("inKet").value.trim();
+  if (pilihan.metode === "MANUAL" && !ket) { $("inKet").focus(); $("inKet").placeholder = "Catatan wajib diisi"; return; }
+  const it = { id: uuid(), kegiatanId: S.kegId, memberId: pilihan.memberId, metode: pilihan.metode, uid: pilihan.uid || "",
+    token: pilihan.token || "", waktuHp: jam(), keterangan: ket };
+  S.antre.push(it);
+  (S.sudahLokal[S.kegId] = S.sudahLokal[S.kegId] || {})[it.memberId] = it.waktuHp;
+  S.log.unshift({ id: it.id, kegiatanId: it.kegiatanId, memberId: it.memberId, nama: pilihan.nama, metode: it.metode, waktuHp: it.waktuHp, status: "TERTUNDA" });
+  simpan();
+  setHasil("warn", "TERSIMPAN DI HP – MENGIRIM…", pilihan.nama, "Status akhir muncul setelah server menjawab.", it.memberId);
+  pilihan = null; $("konfirmBox").classList.add("hide"); render(); kirim();
+}
+function batal() { pilihan = null; $("konfirmBox").classList.add("hide"); setHasil("info", "SIAP", "", "Dibatalkan. Pilih cara membaca kartu."); }
+
+/* ---------- kirim antrean ---------- */
+async function kirim() {
+  if (sibukSync || !S.antre.length || !navigator.onLine) { render(); return; }
+  sibukSync = true;
+  try {
+    const items = S.antre.slice(0, 25);
+    const j = await api({ action: "sync", items: items });
+    j.hasil.forEach(h => {
+      const it = items.find(x => x.id === h.id); if (!it) return;
+      S.antre = S.antre.filter(x => x.id !== h.id);
+      const lg = S.log.find(x => x.id === h.id);
+      if (lg) { lg.status = h.status; lg.alasan = h.alasan || ""; }
+      const lok = S.sudahLokal[it.kegiatanId] || {};
+      delete lok[it.memberId];
+      if (h.status === "BERHASIL" || h.status === "SUDAH") (S.data.sudah[it.kegiatanId] = S.data.sudah[it.kegiatanId] || {})[it.memberId] = h.waktu || it.waktuHp;
+      const tampilIni = $("hasil").querySelector(".srp") && $("hasil").querySelector(".srp").textContent === it.memberId;
+      if (tampilIni && it.kegiatanId === S.kegId) {
+        if (h.status === "BERHASIL") setHasil("ok", "BERHASIL", h.nama, "Tercatat di server " + esc(h.waktu || ""), it.memberId);
+        else if (h.status === "SUDAH") setHasil("warn", "SUDAH DICATAT SEBELUMNYA", h.nama, "Waktu: " + esc(h.waktu || ""), it.memberId);
+        else setHasil("bad", "DITOLAK SERVER", h.nama, esc(h.alasan || ""), it.memberId);
+      }
+    });
+    LS.set("data", S.data); simpan();
+  } catch (e) {
+    const t = $("hasil").querySelector(".lbl");
+    if (t && /MENGIRIM/.test(t.textContent)) t.textContent = "TERSIMPAN DI HP – TERTUNDA (" + e.message + ")";
+  } finally { sibukSync = false; render(); if (S.antre.length && navigator.onLine) setTimeout(kirim, 3000); }
+}
+setInterval(kirim, 15000);
+addEventListener("online", kirim); addEventListener("offline", render);
+
+/* ---------- QR ---------- */
+async function mulaiQR() {
+  if (scanning) return stopKamera();
+  $("cariBox").classList.add("hide");
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+  } catch (e) { return setHasil("bad", "KAMERA TIDAK BISA DIBUKA", "", esc(e.message) + "<br>Izinkan akses kamera untuk situs ini."); }
+  const v = $("vid"); v.srcObject = stream; v.classList.remove("hide"); await v.play();
+  scanning = true; $("btnQR").textContent = "Stop kamera";
+  setHasil("info", "ARAHKAN KAMERA KE QR KARTU", "", "");
+  let det = null;
+  try { if ("BarcodeDetector" in window) det = new BarcodeDetector({ formats: ["qr_code"] }); } catch (e) { det = null; }
+  const cv = document.createElement("canvas"), cx = cv.getContext("2d", { willReadFrequently: true });
+  const loop = async () => {
+    if (!scanning) return;
+    let teks = null;
+    try {
+      if (det) { const r = await det.detect(v); if (r.length) teks = r[0].rawValue; }
+      else if (window.jsQR && v.videoWidth) {
+        cv.width = v.videoWidth; cv.height = v.videoHeight; cx.drawImage(v, 0, 0);
+        const r = jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height); if (r) teks = r.data;
+      }
+    } catch (e) {}
+    if (teks) {
+      const m = String(teks).trim().toUpperCase().match(/^SRP-\d{4}$/);
+      if (m) return tunjuk(m[0], "QR");
+      setHasil("bad", "QR BUKAN KARTU ANGGOTA", "", esc(String(teks).slice(0, 60)));
+    }
+    requestAnimationFrame(loop);
+  };
+  loop();
+}
+function stopKamera() {
+  scanning = false; $("btnQR").textContent = "Pindai QR";
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $("vid").classList.add("hide");
+}
+
+/* ---------- NFC ---------- */
+async function mulaiNFC() {
+  stopKamera(); $("cariBox").classList.add("hide");
+  if (nfcAktif) return setHasil("info", "NFC AKTIF", "", "Tempelkan kartu ke bagian belakang HP.");
+  try {
+    const r = new NDEFReader();
+    await r.scan();
+    nfcAktif = true; $("btnNFC").textContent = "NFC aktif";
+    setHasil("info", "NFC AKTIF", "", "Tempelkan kartu ke bagian belakang HP.");
+    r.onreadingerror = () => setHasil("bad", "KARTU TIDAK TERBACA", "", "Tempelkan lagi, atau pakai QR / cari manual.");
+    r.onreading = ev => {
+      if (pilihan) return; // sedang menunggu konfirmasi
+      let teks = "";
+      for (const rec of ev.message.records) {
+        if (rec.recordType === "text") { teks = new TextDecoder(rec.encoding || "utf-8").decode(rec.data); break; }
+      }
+      const p = teks.split("|");
+      if (p.length < 9 || !/^SRP-\d{4}$/.test(p[0])) return setHasil("bad", "BUKAN KARTU ANGGOTA", "", "Isi chip tidak dikenali.");
+      tunjuk(p[0], "NFC", { token: p[8], uid: ev.serialNumber || "" });
+    };
+  } catch (e) { setHasil("bad", "NFC TIDAK BISA DIPAKAI", "", esc(e.message) + "<br>Pastikan NFC HP menyala dan memakai Chrome."); }
+}
+
+/* ---------- cari manual ---------- */
+function bukaCari() { stopKamera(); $("cariBox").classList.toggle("hide"); $("inCari").value = ""; $("cariList").innerHTML = ""; $("inCari").focus(); }
+function cari() {
+  const q = $("inCari").value.trim().toUpperCase(); const el = $("cariList");
+  if (q.length < 2) { el.innerHTML = ""; return; }
+  const num = q.replace(/\D/g, "");
+  const hasil = S.data.anggota.filter(a => a.n.toUpperCase().includes(q) || a.m.includes(q) || (num && a.m.endsWith(num.padStart(4, "0")))).slice(0, 12);
+  el.innerHTML = hasil.map(a => '<div data-m="' + esc(a.m) + '"><b>' + esc(a.m) + "</b> · " + esc(a.n) + '<br><span class="muted">' + esc(a.s) + " · " + esc(a.r) + "</span></div>").join("") || '<p class="muted">Tidak ditemukan.</p>';
+  el.querySelectorAll("div[data-m]").forEach(d => d.onclick = () => tunjuk(d.dataset.m, "MANUAL"));
+}
+
+/* ---------- lain-lain ---------- */
+function bunyi(ok) { try { navigator.vibrate && navigator.vibrate(ok ? 80 : [60, 60, 60]); } catch (e) {} }
+function unduhCsv() {
+  const rows = [["WaktuHP", "KegiatanID", "MemberID", "Nama", "Metode", "Status", "Alasan"]].concat(
+    S.log.map(x => [x.waktuHp, x.kegiatanId, x.memberId, x.nama, x.metode, x.status, x.alasan || ""]));
+  const csv = "﻿" + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(";")).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = "riwayat_" + (S.cfg.pid || "petugas") + "_" + jam().replace(/[: ]/g, "-") + ".csv"; a.click();
+}
+async function rekapServer() {
+  $("rekapOut").textContent = "Mengambil rekap…";
+  try {
+    const r = await api({ action: "rekap", kegiatanId: S.kegId });
+    $("rekapOut").innerHTML = "Server: <b>" + r.sudah + "</b> dari " + r.sasaran + " SKT (" + r.persen + "%), belum " + r.belum + ".";
+  } catch (e) { $("rekapOut").textContent = "Gagal: " + e.message; }
+}
+async function muatUlang() {
+  if (S.antre.length && !confirm("Masih ada " + S.antre.length + " catatan tertunda. Kirim dulu? (OK = kirim dulu)")) return;
+  await kirim();
+  try { await muatData(); bukaKegiatan(); } catch (e) { alert("Gagal memuat: " + e.message); }
+}
+function keluar() {
+  if (S.antre.length) { alert("Masih ada " + S.antre.length + " catatan tertunda. Kirim dulu sebelum keluar."); return; }
+  if (!confirm("Keluar dan hapus data anggota dari HP ini?")) return;
+  ["cfg", "data", "kegId", "log", "sudahLokal", "antre"].forEach(LS.del);
+  location.reload();
+}
+
+$("btnLogin").onclick = login;
+$("btnReload").onclick = muatUlang; $("btnLogout").onclick = keluar;
+$("btnQR").onclick = mulaiQR; $("btnNFC").onclick = mulaiNFC; $("btnCari").onclick = bukaCari;
+$("inCari").oninput = cari; $("btnKonfirm").onclick = konfirmasi; $("btnBatal").onclick = batal;
+$("btnSync").onclick = kirim; $("btnCsv").onclick = unduhCsv; $("btnRekap").onclick = rekapServer;
+$("btnGanti").onclick = () => { stopKamera(); bukaKegiatan(); };
+
+if (S.cfg) { $("inApi").value = S.cfg.api; $("inPid").value = S.cfg.pid; }
+if (S.cfg && S.data) (S.kegId && kegAktif() ? bukaScan() : bukaKegiatan()); else tampil("vLogin");
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
